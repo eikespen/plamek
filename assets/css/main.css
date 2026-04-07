@@ -1,0 +1,38 @@
+/* Plamek theme — overrides on top of Tailwind (loaded via CDN in header.php) */
+
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif; }
+
+/* Hero slider — fade between background-image divs */
+.pl-hero-slide {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    transition: opacity 1s ease-in-out;
+}
+.pl-hero-slide.opacity-100 { opacity: 1; z-index: 1; }
+.pl-hero-slide.opacity-0   { opacity: 0; z-index: 0; }
+
+/* Pagination links (used on Nyheter) */
+.page-numbers {
+    display: inline-block;
+    padding: 0.5rem 0.85rem;
+    margin: 0 0.2rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    color: #003a76;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background-color .15s, color .15s;
+}
+.page-numbers.current,
+.page-numbers:hover {
+    background: #003a76;
+    color: #fff;
+    border-color: #003a76;
+}
+
+/* Default body padding so fixed nav doesn't overlap top of page on default page.php */
+body.page-template-default main,
+body.single main { padding-top: 0; }

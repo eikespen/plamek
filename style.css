@@ -1,0 +1,14 @@
+/*
+Theme Name: Plamek
+Theme URI: https://plamek.no
+Author: Espen T. Eik
+Author URI: https://plamek.no
+Description: Custom WordPress theme for Plamek AS — Norges største på montering og vedlikehold av duk- og stålhaller. All page content is managed through native WordPress meta boxes (no plugin required).
+Version: 1.0.0
+Requires at least: 5.0
+Requires PHP: 7.4
+License: GNU General Public License v2 or later
+Text Domain: plamek
+*/
+
+/* All visual styles are loaded via assets/css/main.css and Tailwind CDN — see functions.php */
