@@ -61,12 +61,18 @@ $footer_note = pl_opt('footer_note', 'Plamek er en del av Rubb Industries, som i
 
         <!-- Bottom Section -->
         <div class="border-t border-gray-700 mt-8 sm:mt-12 pt-6 sm:pt-8">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div class="text-gray-400 text-xs sm:text-sm">
                     <p>&copy; <?php echo date('Y'); ?> — Plamek AS</p>
                 </div>
-                <div class="text-gray-400 text-xs sm:text-sm">
+                <div class="text-gray-400 text-xs sm:text-sm text-center sm:text-left">
                     <p><?php echo esc_html($footer_note); ?></p>
+                </div>
+                <div class="flex-shrink-0">
+                    <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/miljofyrtarn.webp'); ?>"
+                         alt="Miljøfyrtårn"
+                         class="h-16 w-auto"
+                         loading="lazy">
                 </div>
             </div>
         </div>

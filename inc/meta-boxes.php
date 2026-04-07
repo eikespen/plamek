@@ -101,7 +101,11 @@ function pl_divider()  { echo '<hr class="pl-divider">'; }
 
 function pl_field($post, $key, $label, $type = 'text', $default = '') {
     $val = get_post_meta($post->ID, $key, true);
-    if ($val === '') $val = $default;
+    if ($val === '') {
+        // Prefer the explicit default passed in, otherwise fall back to the
+        // central inc/defaults.php map so the form always shows real content.
+        $val = $default !== '' ? $default : pl_default($key, '');
+    }
     echo '<p class="pl-field"><label for="' . esc_attr($key) . '">' . esc_html($label) . '</label>';
     if ($type === 'textarea') {
         echo '<textarea id="' . esc_attr($key) . '" name="' . esc_attr($key) . '" rows="3">' . esc_textarea($val) . '</textarea>';

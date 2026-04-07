@@ -80,6 +80,14 @@ $site_phone = pl_opt('phone', '70 00 86 04');
                     </div>
                 </div>
 
+                <a href="<?php echo esc_url(home_url('/montering')); ?>"
+                   class="font-medium text-base xl:text-lg text-white/90 hover:text-white transition-all <?php echo is_page('montering') ? 'text-white' : ''; ?>">
+                    Montering
+                </a>
+                <a href="<?php echo esc_url(home_url('/vedlikehold')); ?>"
+                   class="font-medium text-base xl:text-lg text-white/90 hover:text-white transition-all <?php echo is_page('vedlikehold') ? 'text-white' : ''; ?>">
+                    Vedlikehold
+                </a>
                 <a href="<?php echo esc_url(home_url('/referanser')); ?>"
                    class="font-medium text-base xl:text-lg text-white/90 hover:text-white transition-all <?php echo is_page('referanser') ? 'text-white' : ''; ?>">
                     Referanser

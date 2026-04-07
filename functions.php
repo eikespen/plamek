@@ -9,6 +9,7 @@
  */
 defined('ABSPATH') || exit;
 
+require_once get_template_directory() . '/inc/defaults.php';
 require_once get_template_directory() . '/inc/meta-boxes.php';
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/page-seeder.php';
@@ -105,11 +106,13 @@ function pl_format_date_norwegian($date_string) {
     return date('j', $ts) . '. ' . $months[(int)date('n', $ts) - 1] . ' ' . date('Y', $ts);
 }
 
-/* ── Helper: get a meta value with default fallback ── */
-function pl_meta($key, $default = '', $post_id = null) {
+/* ── Helper: get a meta value with fallback through inc/defaults.php ── */
+function pl_meta($key, $default = null, $post_id = null) {
     $post_id = $post_id ?: get_the_ID();
     $val = get_post_meta($post_id, $key, true);
-    return $val !== '' ? $val : $default;
+    if ($val !== '') return $val;
+    if ($default !== null) return $default;
+    return pl_default($key, '');
 }
 
 /* ── Helper: get a global Plamek option with default fallback ── */
