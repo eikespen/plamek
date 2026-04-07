@@ -102,9 +102,10 @@ function pl_divider()  { echo '<hr class="pl-divider">'; }
 function pl_field($post, $key, $label, $type = 'text', $default = '') {
     $val = get_post_meta($post->ID, $key, true);
     if ($val === '') {
-        // Prefer the explicit default passed in, otherwise fall back to the
-        // central inc/defaults.php map so the form always shows real content.
-        $val = $default !== '' ? $default : pl_default($key, '');
+        // Prefer the centralised default from inc/defaults.php, falling back
+        // to whatever was passed inline.
+        $map_default = pl_default($key, '');
+        $val = $map_default !== '' ? $map_default : $default;
     }
     echo '<p class="pl-field"><label for="' . esc_attr($key) . '">' . esc_html($label) . '</label>';
     if ($type === 'textarea') {

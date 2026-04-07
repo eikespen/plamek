@@ -106,13 +106,19 @@ function pl_format_date_norwegian($date_string) {
     return date('j', $ts) . '. ' . $months[(int)date('n', $ts) - 1] . ' ' . date('Y', $ts);
 }
 
-/* ── Helper: get a meta value with fallback through inc/defaults.php ── */
-function pl_meta($key, $default = null, $post_id = null) {
+/* ── Helper: get a meta value with fallback through inc/defaults.php ──
+   Resolution order:
+     1. Saved post_meta value (if non-empty)
+     2. Centralised default from inc/defaults.php
+     3. Explicit $default arg (last resort, e.g. an image URL passed inline)
+*/
+function pl_meta($key, $default = '', $post_id = null) {
     $post_id = $post_id ?: get_the_ID();
     $val = get_post_meta($post_id, $key, true);
     if ($val !== '') return $val;
-    if ($default !== null) return $default;
-    return pl_default($key, '');
+    $map_default = pl_default($key, '');
+    if ($map_default !== '') return $map_default;
+    return $default;
 }
 
 /* ── Helper: get a global Plamek option with default fallback ── */
