@@ -10,8 +10,15 @@ $h_t2   = pl_meta('pl_rep_hero_title2', 'skader på hall');
 $h_desc = pl_meta('pl_rep_hero_desc',   'Har hallen din fått en skade? Vi reparerer alle slags skader på dukhaller, enten det er rifter i duken, skader på stålkonstruksjonen eller andre problemer.');
 $h_img  = pl_meta('pl_rep_hero_image',  get_template_directory_uri() . '/assets/images/hero-default.jpg');
 
+$ov_title = pl_meta('pl_rep_overview_title', '');
+$ov_desc  = pl_meta('pl_rep_overview_desc',  '');
+
 $dt_title = pl_meta('pl_rep_dt_title', 'Vi reparerer alle typer skader');
 $dt_intro = pl_meta('pl_rep_dt_intro', 'Uansett skadeomfang har vi kompetansen til å utbedre det.');
+
+$proc_title = pl_meta('pl_rep_proc_title', '');
+$proc_p1    = pl_meta('pl_rep_proc_p1',    '');
+$proc_p2    = pl_meta('pl_rep_proc_p2',    '');
 
 $damage_defaults = [
     1 => ['Dukskader',           'Rifter, hull og slitasje på hallduken'],
@@ -67,8 +74,22 @@ $cta_btn = pl_meta('pl_rep_cta_btn', 'Meld skade');
         </div>
     </section>
 
-    <!-- Damage types -->
+    <!-- Overview -->
+    <?php if ($ov_title || $ov_desc) : ?>
     <section class="py-16 sm:py-20 lg:py-24">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <?php if ($ov_title) : ?>
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-light text-[#003a76] mb-6"><?php echo esc_html($ov_title); ?></h2>
+            <?php endif; ?>
+            <?php if ($ov_desc) : ?>
+                <p class="text-base sm:text-lg text-gray-700 leading-relaxed"><?php echo esc_html($ov_desc); ?></p>
+            <?php endif; ?>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <!-- Damage types -->
+    <section class="py-16 sm:py-20 lg:py-24 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12 sm:mb-16">
                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-light text-[#003a76] mb-4"><?php echo esc_html($dt_title); ?></h2>
@@ -87,6 +108,21 @@ $cta_btn = pl_meta('pl_rep_cta_btn', 'Meld skade');
             </div>
         </div>
     </section>
+
+    <!-- Process -->
+    <?php if ($proc_title || $proc_p1 || $proc_p2) : ?>
+    <section class="py-16 sm:py-20">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <?php if ($proc_title) : ?>
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-light text-[#003a76] mb-8 text-center"><?php echo esc_html($proc_title); ?></h2>
+            <?php endif; ?>
+            <div class="space-y-6 text-base sm:text-lg text-gray-700 leading-relaxed">
+                <?php if ($proc_p1) : ?><p><?php echo esc_html($proc_p1); ?></p><?php endif; ?>
+                <?php if ($proc_p2) : ?><p><?php echo esc_html($proc_p2); ?></p><?php endif; ?>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
 
     <!-- Benefits -->
     <section class="py-16 sm:py-20 bg-gray-50">

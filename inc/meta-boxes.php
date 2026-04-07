@@ -268,11 +268,13 @@ function pl_mb_tjenester($post) {
             2 => ['Høy kvalitet',         'Vi setter kvalitet i høysetet og bruker kun materialer og metoder som sikrer lang levetid og pålitelighet.'],
             3 => ['HMS-fokus',            'Sikkerhet kommer først. All vårt personell er HMS-sertifisert og følger strenge sikkerhetsprosedyrer.'],
             4 => ['Pålitelige leveranser','Vi holder avtaler og frister. Våre kunder kan stole på at prosjektet blir ferdig til avtalt tid.'],
+            5 => ['Landsdekking',         'Vi utfører oppdrag over hele Norge og har erfaring med prosjekter i alle typer værforhold.'],
+            6 => ['Komplett tjeneste',    'Fra planlegging til ferdigstillelse tilbyr vi en komplett tjeneste som dekker alle aspekter av prosjektet.'],
         ];
-        for ($i = 1; $i <= 4; $i++) {
+        for ($i = 1; $i <= 6; $i++) {
             if ($i > 1) pl_divider();
-            pl_field($post, "pl_tj_benefit{$i}_title", "Fordel $i — tittel", 'text',     $bdef[$i][0]);
-            pl_field($post, "pl_tj_benefit{$i}_desc",  "Fordel $i — tekst",  'textarea', $bdef[$i][1]);
+            pl_field($post, "pl_tj_benefit{$i}_title", "Fordel $i — tittel", 'text',     $bdef[$i][0] ?? '');
+            pl_field($post, "pl_tj_benefit{$i}_desc",  "Fordel $i — tekst",  'textarea', $bdef[$i][1] ?? '');
         }
     pl_section_end();
 
@@ -408,7 +410,67 @@ function pl_mb_dukskift($post) {
 }
 function pl_mb_reparering($post) {
     wp_nonce_field('pl_page_meta', 'pl_page_nonce');
-    pl_render_offerings_mb($post, 'rep', 'dt');
+
+    pl_section_start('✦', 'Hero');
+        pl_grid_start();
+            pl_field($post, 'pl_rep_hero_title1', 'Tittel del 1', 'text', '');
+            pl_field($post, 'pl_rep_hero_title2', 'Tittel del 2 (uthevet)', 'text', '');
+        pl_grid_end();
+        pl_field($post, 'pl_rep_hero_desc',  'Beskrivelse',    'textarea', '');
+        pl_field($post, 'pl_rep_hero_image', 'Hero-bilde URL', 'url',      '');
+    pl_section_end();
+
+    pl_section_start('¶', 'Oversikt');
+        pl_field($post, 'pl_rep_overview_title', 'Overskrift',  'text',     '');
+        pl_field($post, 'pl_rep_overview_desc',  'Beskrivelse', 'textarea', '');
+    pl_section_end();
+
+    pl_section_start('◈', 'Skadetyper (6 kort)');
+        pl_grid_start();
+            pl_field($post, 'pl_rep_dt_title', 'Seksjonstittel', 'text',     '');
+            pl_field($post, 'pl_rep_dt_intro', 'Ingress',        'textarea', '');
+        pl_grid_end();
+        pl_divider();
+        for ($i = 1; $i <= 6; $i++) {
+            if ($i > 1) pl_divider();
+            pl_field($post, "pl_rep_dt{$i}_title", "Kort $i — tittel", 'text',     '');
+            pl_field($post, "pl_rep_dt{$i}_desc",  "Kort $i — tekst",  'textarea', '');
+        }
+    pl_section_end();
+
+    pl_section_start('🔧', 'Prosess');
+        pl_field($post, 'pl_rep_proc_title', 'Overskrift', 'text',     '');
+        pl_field($post, 'pl_rep_proc_p1',    'Avsnitt 1',  'textarea', '');
+        pl_field($post, 'pl_rep_proc_p2',    'Avsnitt 2',  'textarea', '');
+    pl_section_end();
+
+    pl_section_start('★', 'Fordeler (4 kort)');
+        pl_field($post, 'pl_rep_ben_title', 'Seksjonstittel', 'text', '');
+        pl_divider();
+        for ($i = 1; $i <= 4; $i++) {
+            if ($i > 1) pl_divider();
+            pl_field($post, "pl_rep_ben{$i}_title", "Fordel $i — tittel", 'text',     '');
+            pl_field($post, "pl_rep_ben{$i}_desc",  "Fordel $i — tekst",  'textarea', '');
+        }
+    pl_section_end();
+
+    pl_section_start('🖼', 'Galleri (2 bilder)');
+        pl_grid_start();
+            pl_field($post, 'pl_rep_g1_title', 'Bilde 1 — tittel',   'text',     '');
+            pl_field($post, 'pl_rep_g1_desc',  'Bilde 1 — tekst',    'textarea', '');
+        pl_grid_end();
+        pl_field($post, 'pl_rep_g1_img', 'Bilde 1 — URL', 'url', '');
+        pl_divider();
+        pl_grid_start();
+            pl_field($post, 'pl_rep_g2_title', 'Bilde 2 — tittel',   'text',     '');
+            pl_field($post, 'pl_rep_g2_desc',  'Bilde 2 — tekst',    'textarea', '');
+        pl_grid_end();
+        pl_field($post, 'pl_rep_g2_img', 'Bilde 2 — URL', 'url', '');
+    pl_section_end();
+
+    pl_section_start('→', 'CTA-knapp');
+        pl_field($post, 'pl_rep_cta_btn', 'Knapptekst', 'text', '');
+    pl_section_end();
 }
 
 /* ════════════════════════════════════════════
@@ -492,28 +554,46 @@ function pl_mb_om($post) {
         pl_field($post, 'pl_om_hero_image', 'Hero-bilde URL', 'url', '');
     pl_section_end();
 
-    pl_section_start('¶', 'Om oss — hovedinnhold');
-        pl_field($post, 'pl_om_about_title', 'Overskrift', 'text', '');
-        pl_field($post, 'pl_om_about_p1',    'Avsnitt 1',  'textarea', '');
-        pl_field($post, 'pl_om_about_p2',    'Avsnitt 2',  'textarea', '');
+    pl_section_start('¶', 'Hvem er vi (3 avsnitt)');
+        pl_grid_start();
+            pl_field($post, 'pl_om_about_title',    'Tittel del 1',    'text', 'Hvem er');
+            pl_field($post, 'pl_om_about_subtitle', 'Tittel del 2 (uthevet)', 'text', 'vi?');
+        pl_grid_end();
+        pl_field($post, 'pl_om_about_p1', 'Avsnitt 1', 'textarea', '');
+        pl_field($post, 'pl_om_about_p2', 'Avsnitt 2', 'textarea', '');
+        pl_field($post, 'pl_om_about_p3', 'Avsnitt 3', 'textarea', '');
     pl_section_end();
 
-    pl_section_start('🏅', 'Kvalitetsmerker (2)');
+    pl_section_start('⚒', 'Tjenester-seksjon');
         pl_grid_start();
-            pl_field($post, 'pl_om_q1_title', 'Merke 1 — tittel', 'text', 'Kvalitet');
-            pl_field($post, 'pl_om_q1_desc',  'Merke 1 — tekst',  'text', 'Topp utførelse');
+            pl_field($post, 'pl_om_serv_title',    'Tittel del 1',           'text', 'Montering, demontering og');
+            pl_field($post, 'pl_om_serv_subtitle', 'Tittel del 2 (uthevet)', 'text', 'flytting av haller');
         pl_grid_end();
+        pl_field($post, 'pl_om_serv_p1', 'Avsnitt 1', 'textarea', '');
+        pl_field($post, 'pl_om_serv_p2', 'Avsnitt 2', 'textarea', '');
+    pl_section_end();
+
+    pl_section_start('🛡', 'Kvalitet og sikkerhet');
         pl_grid_start();
-            pl_field($post, 'pl_om_q2_title', 'Merke 2 — tittel', 'text', 'Erfaring');
-            pl_field($post, 'pl_om_q2_desc',  'Merke 2 — tekst',  'text', '40+ år i bransjen');
+            pl_field($post, 'pl_om_quality_title',    'Tittel del 1',           'text', 'Kvalitet og');
+            pl_field($post, 'pl_om_quality_subtitle', 'Tittel del 2 (uthevet)', 'text', 'sikkerhet');
         pl_grid_end();
+        pl_divider();
+        pl_field($post, 'pl_om_safety_title', 'Sikkerhet — tittel',    'text',     'Sikkerhet i fokus');
+        pl_field($post, 'pl_om_safety_p1',    'Sikkerhet — avsnitt 1', 'textarea', '');
+        pl_field($post, 'pl_om_safety_p2',    'Sikkerhet — avsnitt 2', 'textarea', '');
+        pl_divider();
+        pl_field($post, 'pl_om_workplace_title', 'Arbeidsplasser — tittel',    'text',     'Gode arbeidsplasser');
+        pl_field($post, 'pl_om_workplace_p1',    'Arbeidsplasser — avsnitt 1', 'textarea', '');
+        pl_field($post, 'pl_om_workplace_p2',    'Arbeidsplasser — avsnitt 2', 'textarea', '');
     pl_section_end();
 
     pl_section_start('🏭', 'Bransjer (6)');
         pl_grid_start();
-            pl_field($post, 'pl_om_ind_title', 'Seksjonstittel', 'text',     'Bransjer vi betjener');
-            pl_field($post, 'pl_om_ind_intro', 'Ingress',        'textarea', '');
+            pl_field($post, 'pl_om_ind_title',    'Tittel del 1',           'text', 'Varierte');
+            pl_field($post, 'pl_om_ind_subtitle', 'Tittel del 2 (uthevet)', 'text', 'bransjer');
         pl_grid_end();
+        pl_field($post, 'pl_om_ind_intro', 'Ingress', 'textarea', '');
         pl_divider();
         pl_grid_start(3);
             pl_field($post, 'pl_om_ind1', 'Bransje 1', 'text', '');
@@ -525,19 +605,6 @@ function pl_mb_om($post) {
             pl_field($post, 'pl_om_ind5', 'Bransje 5', 'text', '');
             pl_field($post, 'pl_om_ind6', 'Bransje 6', 'text', '');
         pl_grid_end();
-    pl_section_end();
-
-    pl_section_start('★', 'Kjerneverdier (3)');
-        pl_grid_start();
-            pl_field($post, 'pl_om_val_title', 'Seksjonstittel', 'text',     'Våre kjerneverdier');
-            pl_field($post, 'pl_om_val_intro', 'Ingress',        'textarea', '');
-        pl_grid_end();
-        pl_divider();
-        for ($i = 1; $i <= 3; $i++) {
-            if ($i > 1) pl_divider();
-            pl_field($post, "pl_om_val{$i}_title", "Verdi $i — tittel", 'text',     '');
-            pl_field($post, "pl_om_val{$i}_desc",  "Verdi $i — tekst",  'textarea', '');
-        }
     pl_section_end();
 
     pl_section_start('🌱', 'Sertifisering');

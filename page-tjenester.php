@@ -22,7 +22,7 @@ for ($i = 1; $i <= 6; $i++) {
 $ben_title = pl_meta('pl_tj_benefits_title', 'Hvorfor velge Plamek?');
 $ben_intro = pl_meta('pl_tj_benefits_intro', 'Vi er din trygge partner på alt som omhandler duk- og stålhaller.');
 $benefits = [];
-for ($i = 1; $i <= 4; $i++) {
+for ($i = 1; $i <= 6; $i++) {
     $benefits[] = [
         'title' => pl_meta("pl_tj_benefit{$i}_title", ''),
         'desc'  => pl_meta("pl_tj_benefit{$i}_desc",  ''),
@@ -88,7 +88,7 @@ $cta_btn_text = pl_meta('pl_tj_cta_btn_text', 'Kontakt oss');
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12">
                 <?php foreach ($benefits as $b) : if (!$b['title']) continue; ?>
                     <div class="text-center group">
                         <div class="w-16 h-16 bg-white rounded-full shadow-lg flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
