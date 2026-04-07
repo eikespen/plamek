@@ -11,6 +11,7 @@ defined('ABSPATH') || exit;
 
 require_once get_template_directory() . '/inc/meta-boxes.php';
 require_once get_template_directory() . '/inc/options.php';
+require_once get_template_directory() . '/inc/page-seeder.php';
 
 /* ── Disable Gutenberg block editor for pages ── */
 add_filter('use_block_editor_for_post_type', function (bool $use, string $post_type): bool {
