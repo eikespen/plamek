@@ -92,13 +92,29 @@ function pl_register_reference_post_type() {
         ],
         'public'      => true,
         'has_archive' => false,
-        'rewrite'     => ['slug' => 'referanser'],
+        'rewrite'     => ['slug' => 'referanser', 'with_front' => false],
         'supports'    => ['title', 'editor', 'thumbnail', 'excerpt'],
         'menu_icon'   => 'dashicons-portfolio',
         'show_in_rest'=> true,
     ]);
+
+    // The "Referanser" PAGE has slug `referanser`, which means WordPress's
+    // default URL parser sees /referanser/foo/ as a child of that page and
+    // returns 404. Add a high-priority rewrite that routes /referanser/{slug}/
+    // straight to the reference CPT single template.
+    add_rewrite_rule('^referanser/([^/]+)/?$', 'index.php?reference=$matches[1]', 'top');
 }
 add_action('init', 'pl_register_reference_post_type');
+
+/* ── Auto-flush rewrite rules once after this fix lands ── */
+add_action('init', function () {
+    // Bump this constant whenever rewrite rules change to force a one-time flush
+    $current = get_option('pl_rewrite_version');
+    if ($current !== '2') {
+        flush_rewrite_rules(false);
+        update_option('pl_rewrite_version', '2');
+    }
+}, 99);
 
 /* ── Helper: Norwegian month names for date formatting ── */
 function pl_format_date_norwegian($date_string) {
