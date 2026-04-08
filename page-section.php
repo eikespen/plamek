@@ -32,7 +32,9 @@ foreach ($sections as $s) {
     if ($order <= 0) $order = array_search($s, $sections, true) + 1;
     $ordered[] = ['key' => $s, 'order' => $order];
 }
-usort($ordered, fn($a, $b) => $a['order'] <=> $b['order']);
+usort($ordered, function ($a, $b) {
+    return $a['order'] <=> $b['order'];
+});
 ?>
 
 <div class="min-h-screen bg-white">
