@@ -19,26 +19,31 @@
 get_header();
 $pid = get_the_ID();
 
-$sec_enabled = function ($key) use ($pid) {
-    return get_post_meta($pid, 'pl_sec_' . $key . '_on', true) === '1';
-};
-
 // Determine the rendering order from per-section "order" inputs (default 1..7).
-$sections = ['hero', 'twocol', 'cards', 'stats', 'gallery', 'cta', 'text'];
-$ordered  = [];
-foreach ($sections as $s) {
-    if (!$sec_enabled($s)) continue;
-    $order = (int) get_post_meta($pid, 'pl_sec_' . $s . '_order', true);
-    if ($order <= 0) $order = array_search($s, $sections, true) + 1;
-    $ordered[] = ['key' => $s, 'order' => $order];
+$pl_sections = array('hero', 'twocol', 'cards', 'stats', 'gallery', 'cta', 'text');
+$pl_ordered  = array();
+foreach ($pl_sections as $pl_idx => $pl_s) {
+    $pl_on = get_post_meta($pid, 'pl_sec_' . $pl_s . '_on', true);
+    if ($pl_on !== '1') {
+        continue;
+    }
+    $pl_order = (int) get_post_meta($pid, 'pl_sec_' . $pl_s . '_order', true);
+    if ($pl_order <= 0) {
+        $pl_order = $pl_idx + 1;
+    }
+    $pl_ordered[] = array('key' => $pl_s, 'order' => $pl_order);
 }
-usort($ordered, function ($a, $b) {
-    return $a['order'] <=> $b['order'];
-});
+if (!function_exists('pl_sort_sections_by_order')) {
+    function pl_sort_sections_by_order($a, $b) {
+        if ($a['order'] === $b['order']) return 0;
+        return ($a['order'] < $b['order']) ? -1 : 1;
+    }
+}
+usort($pl_ordered, 'pl_sort_sections_by_order');
 ?>
 
 <div class="min-h-screen bg-white">
-<?php foreach ($ordered as $i => $entry) :
+<?php foreach ($pl_ordered as $i => $entry) :
     $s         = $entry['key'];
     $alternate = ($i % 2 === 1);
     $bg        = $alternate ? 'bg-gray-50' : 'bg-white';
