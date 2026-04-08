@@ -13,6 +13,16 @@ jobs:
       - name: Install lftp
         run: sudo apt-get update && sudo apt-get install -y lftp
 
+      - name: Verify local files exist before upload
+        run: |
+          echo "=== Repo file listing ==="
+          ls -la
+          echo ""
+          echo "=== Specific files we care about ==="
+          ls -la page-section.php || echo "MISSING: page-section.php"
+          ls -la inc/duplicate-page.php || echo "MISSING: inc/duplicate-page.php"
+          ls -la inc/
+
       - name: Deploy via lftp (FTPS)
         env:
           FTP_SERVER:    ${{ secrets.FTP_SERVER }}
@@ -27,8 +37,10 @@ jobs:
             set ssl:verify-certificate no;
             set net:max-retries 2;
             set net:timeout 30;
+            set xfer:log yes;
+            set xfer:log-file lftp-xfer.log;
             open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" ftp://$FTP_SERVER;
-            mirror --reverse --delete --verbose --parallel=4 \
+            mirror --reverse --delete --verbose=3 --parallel=4 \
               --exclude-glob .git \
               --exclude-glob .git/* \
               --exclude-glob .github \
@@ -37,7 +49,27 @@ jobs:
               --exclude-glob README.md \
               --exclude-glob CLAUDE.md \
               --exclude-glob .DS_Store \
+              --exclude-glob lftp-xfer.log \
               --exclude-glob .ftp-deploy-sync-state.json \
               --exclude-glob .ftp-deploy-state-v2.json \
               ./ \"$FTP_THEME_PATH\";
           "
+
+      - name: Explicit upload of stubborn files
+        env:
+          FTP_SERVER:    ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME:  ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD:  ${{ secrets.FTP_PASSWORD }}
+          FTP_THEME_PATH: ${{ secrets.FTP_THEME_PATH }}
+        run: |
+          lftp -c "
+            set ftp:ssl-allow yes;
+            set ftp:ssl-force true;
+            set ssl:verify-certificate no;
+            open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" ftp://$FTP_SERVER;
+            cd \"$FTP_THEME_PATH\";
+            put -O . page-section.php;
+            cd inc;
+            lcd inc;
+            put -O . duplicate-page.php;
+          " || echo "Explicit put failed (check logs above)"
