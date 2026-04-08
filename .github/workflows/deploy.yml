@@ -20,7 +20,11 @@ jobs:
           port: 21
           local-dir: ./
           server-dir: ${{ secrets.FTP_THEME_PATH }}
-          dangerous-clean-slate: true
+          # Bump this state-name whenever you need to force a full re-upload
+          # (e.g. if the action skipped new files due to a stale sync state).
+          state-name: .ftp-deploy-state-v2.json
+          dangerous-clean-slate: false
+          log-level: standard
           exclude: |
             **/.git*
             **/.git*/**
@@ -28,3 +32,4 @@ jobs:
             **/README.md
             **/.github/**
             **/CLAUDE.md
+            **/.ftp-deploy-sync-state.json
