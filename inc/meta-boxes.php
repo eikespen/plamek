@@ -146,6 +146,12 @@ add_action('add_meta_boxes_page', function ($post) {
     if (isset($map[$slug])) {
         list($cb, $title) = $map[$slug];
         add_meta_box('pl_mb_' . $slug, $title, $cb, 'page', 'normal', 'high');
+        return;
+    }
+
+    // Pages using the flexible "Seksjonsside" template get the section meta box
+    if (get_page_template_slug($post->ID) === 'page-section.php') {
+        add_meta_box('pl_mb_section', 'Seksjonsside — Innhold', 'pl_mb_section_page', 'page', 'normal', 'high');
     }
 });
 
@@ -698,6 +704,134 @@ function pl_mb_simple_hero($post) {
         pl_grid_end();
         pl_field($post, 'pl_simple_hero_desc',  'Beskrivelse',    'textarea', '');
         pl_field($post, 'pl_simple_hero_image', 'Hero-bilde URL', 'url',      '');
+    pl_section_end();
+}
+
+/* ════════════════════════════════════════════
+   SECTION PAGE (flexible "build your own page")
+════════════════════════════════════════════ */
+function pl_mb_section_page($post) {
+    wp_nonce_field('pl_page_meta', 'pl_page_nonce');
+
+    echo '<p class="description" style="margin: 0 0 14px;">Hver seksjon vises kun hvis den er skrudd på. Endre <strong>Rekkefølge</strong> for å bytte plassering (1 = øverst).</p>';
+
+    /* Helper to render an "enable" + "order" header for each section */
+    $section = function ($key, $icon, $title, $default_order) use ($post) {
+        $on    = get_post_meta($post->ID, "pl_sec_{$key}_on", true);
+        $order = get_post_meta($post->ID, "pl_sec_{$key}_order", true);
+        if ($order === '') $order = $default_order;
+        ?>
+        <div class="pl-section">
+            <p class="pl-section-title">
+                <span class="pl-badge"><?php echo esc_html($icon); ?></span>
+                <?php echo esc_html($title); ?>
+                <label style="margin-left:auto;font-size:11px;font-weight:600;color:#646970;text-transform:uppercase;letter-spacing:.5px;">
+                    <input type="checkbox" name="pl_sec_<?php echo esc_attr($key); ?>_on" value="1" <?php checked($on, '1'); ?> style="margin-right:4px;vertical-align:-2px;">
+                    Vis
+                </label>
+                <label style="margin-left:14px;font-size:11px;font-weight:600;color:#646970;text-transform:uppercase;letter-spacing:.5px;">
+                    Rekkefølge
+                    <input type="number" name="pl_sec_<?php echo esc_attr($key); ?>_order" value="<?php echo esc_attr($order); ?>" min="1" max="20" style="width:50px;margin-left:6px;padding:3px 5px;font-size:12px;">
+                </label>
+            </p>
+        <?php
+    };
+
+    /* ── 1. Hero ── */
+    $section('hero', '✦', 'Hero', 1);
+        pl_grid_start();
+            pl_field($post, 'pl_sec_hero_title1', 'Tittel del 1', 'text', '');
+            pl_field($post, 'pl_sec_hero_title2', 'Tittel del 2 (uthevet)', 'text', '');
+        pl_grid_end();
+        pl_field($post, 'pl_sec_hero_desc',  'Beskrivelse',    'textarea', '');
+        pl_field($post, 'pl_sec_hero_image', 'Hero-bilde URL', 'url',      '');
+    pl_section_end();
+
+    /* ── 2. Two-column with image ── */
+    $section('twocol', '◫', 'To-kolonne med bilde', 2);
+        pl_field($post, 'pl_sec_twocol_title', 'Overskrift', 'text', '');
+        pl_field($post, 'pl_sec_twocol_body',  'Brødtekst',  'textarea', '');
+        pl_grid_start();
+            pl_field($post, 'pl_sec_twocol_image', 'Bilde URL', 'url', '');
+            ?>
+            <p class="pl-field"><label>Bildeplassering</label>
+                <select name="pl_sec_twocol_pos" style="width:100%;padding:7px;border:1px solid #dcdcde;border-radius:4px;">
+                    <?php $pos = get_post_meta($post->ID, 'pl_sec_twocol_pos', true) ?: 'right'; ?>
+                    <option value="right" <?php selected($pos, 'right'); ?>>Høyre</option>
+                    <option value="left"  <?php selected($pos, 'left'); ?>>Venstre</option>
+                </select>
+            </p>
+            <?php
+        pl_grid_end();
+    pl_section_end();
+
+    /* ── 3. Card grid (3 cards) ── */
+    $section('cards', '◈', '3-kort grid', 3);
+        pl_grid_start();
+            pl_field($post, 'pl_sec_cards_title', 'Seksjonstittel', 'text',     '');
+            pl_field($post, 'pl_sec_cards_intro', 'Ingress',        'textarea', '');
+        pl_grid_end();
+        pl_divider();
+        for ($i = 1; $i <= 3; $i++) {
+            if ($i > 1) pl_divider();
+            pl_grid_start();
+                pl_field($post, "pl_sec_card{$i}_title", "Kort $i — tittel", 'text', '');
+                pl_field($post, "pl_sec_card{$i}_link",  "Kort $i — lenke",  'text', '');
+            pl_grid_end();
+            pl_field($post, "pl_sec_card{$i}_desc",  "Kort $i — beskrivelse", 'textarea', '');
+            pl_field($post, "pl_sec_card{$i}_image", "Kort $i — bilde URL",   'url',      '');
+        }
+    pl_section_end();
+
+    /* ── 4. Stats row (4 numbers) ── */
+    $section('stats', '#', 'Statistikk (4 tall)', 4);
+        pl_grid_start(4);
+            pl_field($post, 'pl_sec_stat1_num', 'Tall 1', 'text', '');
+            pl_field($post, 'pl_sec_stat2_num', 'Tall 2', 'text', '');
+            pl_field($post, 'pl_sec_stat3_num', 'Tall 3', 'text', '');
+            pl_field($post, 'pl_sec_stat4_num', 'Tall 4', 'text', '');
+        pl_grid_end();
+        pl_grid_start(4);
+            pl_field($post, 'pl_sec_stat1_label', 'Etikett 1', 'text', '');
+            pl_field($post, 'pl_sec_stat2_label', 'Etikett 2', 'text', '');
+            pl_field($post, 'pl_sec_stat3_label', 'Etikett 3', 'text', '');
+            pl_field($post, 'pl_sec_stat4_label', 'Etikett 4', 'text', '');
+        pl_grid_end();
+    pl_section_end();
+
+    /* ── 5. Gallery (2 images) ── */
+    $section('gallery', '🖼', 'Galleri (2 bilder)', 5);
+        pl_grid_start();
+            pl_field($post, 'pl_sec_gallery_title', 'Seksjonstittel', 'text',     '');
+            pl_field($post, 'pl_sec_gallery_intro', 'Ingress',        'textarea', '');
+        pl_grid_end();
+        pl_divider();
+        for ($i = 1; $i <= 2; $i++) {
+            if ($i > 1) pl_divider();
+            pl_grid_start();
+                pl_field($post, "pl_sec_gallery{$i}_title", "Bilde $i — tittel", 'text', '');
+                pl_field($post, "pl_sec_gallery{$i}_img",   "Bilde $i — URL",    'url',  '');
+            pl_grid_end();
+            pl_field($post, "pl_sec_gallery{$i}_desc", "Bilde $i — tekst", 'textarea', '');
+        }
+    pl_section_end();
+
+    /* ── 6. CTA banner ── */
+    $section('cta', '→', 'CTA-banner', 6);
+        pl_grid_start();
+            pl_field($post, 'pl_sec_cta_title', 'Tittel',  'text',     '');
+            pl_field($post, 'pl_sec_cta_intro', 'Ingress', 'textarea', '');
+        pl_grid_end();
+        pl_grid_start();
+            pl_field($post, 'pl_sec_cta_btn',  'Knapptekst', 'text', 'Kontakt oss');
+            pl_field($post, 'pl_sec_cta_link', 'Knapplenke', 'text', '/kontakt');
+        pl_grid_end();
+    pl_section_end();
+
+    /* ── 7. Text block ── */
+    $section('text', '¶', 'Tekstblokk', 7);
+        pl_field($post, 'pl_sec_text_title', 'Overskrift', 'text',     '');
+        pl_field($post, 'pl_sec_text_body',  'Brødtekst',  'textarea', '');
     pl_section_end();
 }
 
