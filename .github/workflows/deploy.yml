@@ -10,26 +10,34 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy theme via SFTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          port: 21
-          local-dir: ./
-          server-dir: ${{ secrets.FTP_THEME_PATH }}
-          # Bump this state-name whenever you need to force a full re-upload
-          # (e.g. if the action skipped new files due to a stale sync state).
-          state-name: .ftp-deploy-state-v2.json
-          dangerous-clean-slate: false
-          log-level: standard
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/docker-compose.yml
-            **/README.md
-            **/.github/**
-            **/CLAUDE.md
-            **/.ftp-deploy-sync-state.json
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Deploy via lftp (FTPS)
+        env:
+          FTP_SERVER:    ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME:  ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD:  ${{ secrets.FTP_PASSWORD }}
+          FTP_THEME_PATH: ${{ secrets.FTP_THEME_PATH }}
+        run: |
+          lftp -c "
+            set ftp:ssl-allow yes;
+            set ftp:ssl-force true;
+            set ftp:ssl-protect-data true;
+            set ssl:verify-certificate no;
+            set net:max-retries 2;
+            set net:timeout 30;
+            open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" ftp://$FTP_SERVER;
+            mirror --reverse --delete --verbose --parallel=4 \
+              --exclude-glob .git \
+              --exclude-glob .git/* \
+              --exclude-glob .github \
+              --exclude-glob .github/* \
+              --exclude-glob docker-compose.yml \
+              --exclude-glob README.md \
+              --exclude-glob CLAUDE.md \
+              --exclude-glob .DS_Store \
+              --exclude-glob .ftp-deploy-sync-state.json \
+              --exclude-glob .ftp-deploy-state-v2.json \
+              ./ \"$FTP_THEME_PATH\";
+          "
